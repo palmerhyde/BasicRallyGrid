@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>BasicRallyGrid</title>
-
-    <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
-
-    <script type="text/javascript">
-        Rally.onReady(function () {
-                Ext.define('CustomApp', {
+Ext.define('CustomApp', {
     extend: 'Rally.app.App',
     componentCls: 'app',
 
@@ -110,25 +101,3 @@
         }
     }
 });
-
-            Rally.launchApp('CustomApp', {
-                name:"BasicRallyGrid",
-                parentRepos:"",
-                version:"0.1.1"
-            });
-
-        });
-    </script>
-
-
-
-    <style type="text/css">
-        .app {
-  /* Add app styles here */
-}
-
-    </style>
-</head>
-<body>
-</body>
-</html>

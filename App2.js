@@ -48,8 +48,6 @@ Ext.define('CustomApp', {
 
     loadData: function() {
         var selectedRelease = this.down('#releasePicker').getRecord().get('_ref')
-        console.log(selectedRelease)
-
         var filters = this.getFilters(selectedRelease)
         
         if (this.store) {
@@ -66,24 +64,20 @@ Ext.define('CustomApp', {
                     },
                     scope: this
                 },
-                fetch: ['FormattedID', 'Name', 'Parent', 'State', 'c_CurrentQtrRank', 'Project'],
+                fetch: ['FormattedID', 'Name', 'Parent', 'State', 'c_CurrentQtrRank', 'Project', 'Children', 'PercentDoneByStoryCount', 'PercentDoneByStoryPlanEstimate'],
                 context:  this.getContext().getDataContext()
             });
         }
     },
 
     createGrid: function(store, data) {
+        console.log(data)
         var records = _.map(data, function(record) {
             var rank = 999
-            var mbi = ''
             var pname = ''
             
             if (record.get('Parent') != null && record.get('Parent').c_CurrentQtrRank != null) {
                 rank = record.get('Parent').c_CurrentQtrRank
-            }
-
-            if (record.get('Parent') != null && record.get('Parent').Name != null) {
-                mbi = record.get('Parent').Name
             }
 
             if (record.get('Project') != null && record.get('Project').Name != null) {
@@ -92,8 +86,7 @@ Ext.define('CustomApp', {
 
             return Ext.apply({
                Rank: rank,
-               MBI: mbi,
-               Team: pname
+               Team: pname,
             }, record.getData());
         });
         
@@ -110,7 +103,6 @@ Ext.define('CustomApp', {
             {
                 xtype: 'templatecolumn',
                 text: 'ID',
-                dataIndex: 'FormattedID',
                 width: 100,
                 tpl: Ext.create('Rally.ui.renderer.template.FormattedIDTemplate')
             },
@@ -124,14 +116,26 @@ Ext.define('CustomApp', {
                 dataIndex: 'Rank',
             },
             {
+                xtype: 'templatecolumn',
                 text: 'MBI',
-                dataIndex: 'MBI',
+                width: 100,
+                tpl: Ext.create('Rally.ui.renderer.template.ParentTemplate'),
                 flex: 1
             },
             {
                 text: 'Project',
                 dataIndex: 'Team',
             },
+            {
+                xtype: 'templatecolumn',
+                text: 'Story progress',
+                tpl: Ext.create('Rally.ui.renderer.template.progressbar.PercentDoneByStoryCountTemplate'),
+            },
+            {
+                xtype: 'templatecolumn',
+                text: 'Points progress',
+                tpl: Ext.create('Rally.ui.renderer.template.progressbar.PercentDoneByStoryPlanEstimateTemplate'),
+            }
         ]
     })
 

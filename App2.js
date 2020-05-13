@@ -64,7 +64,7 @@ Ext.define('CustomApp', {
                     },
                     scope: this
                 },
-                fetch: ['FormattedID', 'Name', 'Parent', 'State', 'c_CurrentQtrRank', 'Project', 'Children', 'PercentDoneByStoryCount', 'PercentDoneByStoryPlanEstimate'],
+                fetch: ['FormattedID', 'Name', 'Parent', 'State', 'c_CurrentQtrRank', 'c_ProductLineRank', 'Project', 'Children', 'PercentDoneByStoryCount', 'PercentDoneByStoryPlanEstimate'],
                 context:  this.getContext().getDataContext()
             });
         }
@@ -75,6 +75,7 @@ Ext.define('CustomApp', {
         var records = _.map(data, function(record) {
             var rank = 999
             var pname = ''
+            var prank = 999
             
             if (record.get('Parent') != null && record.get('Parent').c_CurrentQtrRank != null) {
                 rank = record.get('Parent').c_CurrentQtrRank
@@ -84,8 +85,13 @@ Ext.define('CustomApp', {
                 pname = record.get('Project').Name
             }
 
+            if (record.get('Parent') != null && record.get('Parent').c_ProductLineRank != null) {
+                prank = record.get('Parent').c_ProductLineRank
+            }
+
             return Ext.apply({
                Rank: rank,
+               Prank: prank,
                Team: pname,
             }, record.getData());
         });
@@ -97,7 +103,13 @@ Ext.define('CustomApp', {
         this.grid = Ext.create('Rally.ui.grid.Grid', {
         showRowActionsColumn: false,
         store: Ext.create('Rally.data.custom.Store', {
-            data: records
+            data: records,
+            sorters: [
+                {
+                    property: 'Rank',
+                    direction: 'ASC'
+                }
+            ],
         }),
         columnCfgs: [
             {
@@ -112,8 +124,12 @@ Ext.define('CustomApp', {
                 flex: 1
             },
             {
-                text: 'Rank',
+                text: 'Parent Curr Qtr Rank',
                 dataIndex: 'Rank',
+            },
+            {
+                text: 'Product line Rank',
+                dataIndex: 'Prank',
             },
             {
                 xtype: 'templatecolumn',
